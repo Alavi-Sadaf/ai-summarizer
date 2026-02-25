@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface Note {
     id: string;
@@ -8,42 +8,45 @@ export interface Note {
     created_at: string;
 }
 
-export const noteApi = {
-    getAll: async (): Promise<Note[]> => {
-        const res = await fetch(`${API_URL}/notes`);
+export const getNotes = async (): Promise<Note[]> => {
+    return fetch(`${BASE_URL}/notes`).then(res => {
         if (!res.ok) throw new Error('Failed to fetch notes');
         return res.json();
-    },
+    });
+};
 
-    getOne: async (id: string): Promise<Note> => {
-        const res = await fetch(`${API_URL}/notes/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch note');
-        return res.json();
-    },
-
-    create: async (title: string, content: string): Promise<Note> => {
-        const res = await fetch(`${API_URL}/notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content }),
-        });
+export const createNote = async (data: { title: string; content: string }): Promise<Note> => {
+    return fetch(`${BASE_URL}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    }).then(res => {
         if (!res.ok) throw new Error('Failed to create note');
         return res.json();
-    },
+    });
+};
 
-    summarize: async (id: string): Promise<Note> => {
-        const res = await fetch(`${API_URL}/notes/${id}/summarize`, {
-            method: 'POST',
-        });
+export const getNote = async (id: string): Promise<Note> => {
+    return fetch(`${BASE_URL}/notes/${id}`).then(res => {
+        if (!res.ok) throw new Error('Failed to fetch note');
+        return res.json();
+    });
+};
+
+export const summarizeNote = async (id: string): Promise<Note> => {
+    return fetch(`${BASE_URL}/notes/${id}/summarize`, {
+        method: "POST"
+    }).then(res => {
         if (!res.ok) throw new Error('Failed to summarize note');
         return res.json();
-    },
+    });
+};
 
-    delete: async (id: string): Promise<{ id: string }> => {
-        const res = await fetch(`${API_URL}/notes/${id}`, {
-            method: 'DELETE',
-        });
+export const deleteNote = async (id: string): Promise<{ id: string }> => {
+    return fetch(`${BASE_URL}/notes/${id}`, {
+        method: 'DELETE',
+    }).then(res => {
         if (!res.ok) throw new Error('Failed to delete note');
         return res.json();
-    },
+    });
 };
