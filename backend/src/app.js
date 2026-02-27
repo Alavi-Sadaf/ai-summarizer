@@ -1,10 +1,8 @@
+require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const noteRoutes = require('./routes/noteRoutes');
-
-// Load environment variables
-dotenv.config();
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -20,6 +18,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 
 // Health Check

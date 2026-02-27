@@ -40,12 +40,12 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
                     <span>New Note</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] border-primary/20 bg-background/95 backdrop-blur-md">
+            <DialogContent className="sm:max-w-[500px] border-none liquid-glass rounded-3xl">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold tracking-tight">Capture Insight</DialogTitle>
                         <DialogDescription className="text-muted-foreground">
-                            Add a new note and let Gemini AI summarize its core message.
+                            Add a new note and let AI summarize its core message.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-6">
@@ -53,7 +53,7 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
                             <Input
                                 id="title"
                                 placeholder="Topic or Headline"
-                                className="col-span-3 border-primary/10 focus-visible:ring-primary/30 h-11 text-lg font-medium"
+                                className="col-span-3 glass-input h-12 text-lg font-medium border-none"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 autoFocus
@@ -63,7 +63,7 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
                             <Textarea
                                 id="content"
                                 placeholder="Write your thoughts here..."
-                                className="col-span-3 min-h-[150px] border-primary/10 focus-visible:ring-primary/30 resize-none leading-relaxed"
+                                className="col-span-3 min-h-[150px] glass-textarea border-none resize-none leading-relaxed"
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                             />

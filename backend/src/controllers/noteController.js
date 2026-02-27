@@ -1,5 +1,5 @@
 const supabase = require('../config/supabase');
-const { summarizeNote: getGeminiSummary } = require('../services/geminiService');
+const { summarizeNote: getAiSummary } = require('../services/aiService');
 
 // @desc    Get all notes
 // @route   GET /api/notes
@@ -8,6 +8,7 @@ const getNotes = async (req, res) => {
         const { data, error } = await supabase
             .from('notes')
             .select('*')
+            .eq('user_id', req.user.id)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -25,6 +26,7 @@ const getNoteById = async (req, res) => {
             .from('notes')
             .select('*')
             .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
             .single();
 
         if (error) {
@@ -47,17 +49,25 @@ const createNote = async (req, res) => {
     }
 
     try {
-        const summary = await getGeminiSummary(content);
+        console.log('📝 Creating note:', { title });
+        const summary = await getAiSummary(content);
+        console.log('🤖 AI Summary status:', summary.startsWith('Failed') ? 'Failed (using fallback)' : 'Success');
 
         const { data, error } = await supabase
             .from('notes')
-            .insert([{ title, content, summary }])
+            .insert([{ title, content, summary, user_id: req.user.id }])
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Supabase Insert Error:', error);
+            throw error;
+        }
+        
+        console.log('✅ Note saved successfully');
         res.status(201).json(data);
     } catch (error) {
+        console.error('💥 Controller Error:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -71,6 +81,7 @@ const summarizeNote = async (req, res) => {
             .from('notes')
             .select('content')
             .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
             .single();
 
         if (fetchError) {
@@ -79,13 +90,14 @@ const summarizeNote = async (req, res) => {
         }
 
         // 2. Summarize
-        const summary = await getGeminiSummary(note.content);
+        const summary = await getAiSummary(note.content);
 
         // 3. Update note
         const { data: updatedNote, error: updateError } = await supabase
             .from('notes')
             .update({ summary })
             .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
             .select()
             .single();
 
@@ -104,7 +116,8 @@ const deleteNote = async (req, res) => {
         const { error } = await supabase
             .from('notes')
             .delete()
-            .eq('id', req.params.id);
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id);
 
         if (error) throw error;
         res.status(200).json({ id: req.params.id });

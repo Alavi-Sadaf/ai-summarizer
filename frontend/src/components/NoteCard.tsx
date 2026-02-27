@@ -25,7 +25,7 @@ export function NoteCard({ note, onDelete, onSummarize, isSummarizing }: NoteCar
             transition={{ duration: 0.35, ease: "easeOut" }}
         >
             <Link href={`/note/${note.id}`} className="block group h-full">
-                <Card className="relative h-full overflow-hidden transition-all duration-300 bg-card/50 backdrop-blur-sm border-primary/5 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 rounded-2xl">
+                <Card className="relative h-full overflow-hidden liquid-glass liquid-glass-hover border-none rounded-2xl">
                     {/* Hover gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     
@@ -53,7 +53,7 @@ export function NoteCard({ note, onDelete, onSummarize, isSummarizing }: NoteCar
                         </p>
 
                         {note.summary && (
-                            <div className="p-3 rounded-xl bg-primary/5 border border-primary/10 relative overflow-hidden">
+                            <div className="p-3 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden backdrop-blur-md">
                                 <div className="absolute top-2 right-2 opacity-30">
                                     <Sparkles className="h-3 w-3 text-primary" />
                                 </div>
@@ -75,18 +75,16 @@ export function NoteCard({ note, onDelete, onSummarize, isSummarizing }: NoteCar
                             <ArrowRight className="h-3 w-3" />
                         </Button>
 
-                        {!note.summary && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 rounded-xl text-xs font-semibold gap-1.5 border-primary/15 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all z-10 h-9"
-                                onClick={(e) => onSummarize(note.id, e)}
-                                disabled={isSummarizing}
-                            >
-                                <Sparkles className="h-3 w-3 text-primary" />
-                                {isSummarizing ? "Thinking..." : "Summarize"}
-                            </Button>
-                        )}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 rounded-xl text-xs font-semibold gap-1.5 border-primary/15 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all z-10 h-9"
+                            onClick={(e) => onSummarize(note.id, e)}
+                            disabled={isSummarizing}
+                        >
+                            <Sparkles className="h-3 w-3 text-primary" />
+                            {isSummarizing ? "Thinking..." : note.summary ? "Regen" : "Summarize"}
+                        </Button>
                     </CardFooter>
                 </Card>
             </Link>

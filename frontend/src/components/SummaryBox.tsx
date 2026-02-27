@@ -17,7 +17,7 @@ export function SummaryBox({ summary, onGenerate, isGenerating }: SummaryBoxProp
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-8 rounded-2xl border border-dashed border-primary/15 bg-primary/[0.03] flex flex-col items-center text-center space-y-5"
+                    className="p-8 rounded-2xl border-none liquid-glass flex flex-col items-center text-center space-y-5"
                 >
                     <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
                         <Sparkles className="h-5 w-5 text-primary/60" />
@@ -25,7 +25,7 @@ export function SummaryBox({ summary, onGenerate, isGenerating }: SummaryBoxProp
                     <div className="space-y-1.5">
                         <h3 className="font-bold text-base">No summary yet</h3>
                         <p className="text-muted-foreground text-sm max-w-xs">
-                            Let Gemini analyze this note and extract key insights.
+                            Let AI analyze this note and extract key insights.
                         </p>
                     </div>
                     <Button
@@ -46,7 +46,7 @@ export function SummaryBox({ summary, onGenerate, isGenerating }: SummaryBoxProp
                     key="summary"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] p-6 group"
+                     className="relative overflow-hidden rounded-2xl border-none liquid-glass p-6 group"
                 >
                     <div className="absolute top-0 right-0 p-5 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Sparkles className="h-12 w-12 text-primary" />
@@ -63,9 +63,28 @@ export function SummaryBox({ summary, onGenerate, isGenerating }: SummaryBoxProp
                         {summary}
                     </p>
                     
-                    <div className="mt-4 flex items-center gap-2 text-[10px] font-medium text-muted-foreground/40">
-                        <span className="h-px w-6 bg-primary/15" />
-                        Powered by Gemini
+                    <div className="mt-4 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 text-[10px] font-medium text-muted-foreground/40 text-nowrap">
+                            <span className="h-px w-6 bg-primary/15" />
+                            AI-Powered Analysis
+                        </div>
+                        
+                        {onGenerate && (
+                            <Button
+                                onClick={onGenerate}
+                                disabled={isGenerating}
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-3 text-[10px] font-bold uppercase tracking-wider text-primary/60 hover:text-primary hover:bg-primary/10 rounded-lg transition-all gap-1.5"
+                            >
+                                {isGenerating ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                    <Sparkles className="h-3 w-3" />
+                                )}
+                                {isGenerating ? "Regenerating..." : "Regenerate"}
+                            </Button>
+                        )}
                     </div>
                 </motion.div>
             ) : null}

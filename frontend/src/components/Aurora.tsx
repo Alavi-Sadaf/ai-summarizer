@@ -136,14 +136,26 @@ export default function Aurora(props: AuroraProps) {
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.canvas.style.backgroundColor = 'transparent';
+    // Style the canvas to fill its container
+    const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
 
     let program: Program | undefined;
 
+    function getSize() {
+      if (!ctn) return { width: window.innerWidth, height: 700 };
+      const w = ctn.offsetWidth || window.innerWidth;
+      const h = ctn.offsetHeight || 700;
+      return { width: w, height: h };
+    }
+
     function resize() {
-      if (!ctn) return;
-      const width = ctn.offsetWidth;
-      const height = ctn.offsetHeight;
+      const { width, height } = getSize();
       renderer.setSize(width, height);
       if (program) {
         program.uniforms.uResolution.value = [width, height];
@@ -161,6 +173,8 @@ export default function Aurora(props: AuroraProps) {
       return [c.r, c.g, c.b];
     });
 
+    const { width: initW, height: initH } = getSize();
+
     program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
@@ -168,13 +182,24 @@ export default function Aurora(props: AuroraProps) {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
         uColorStops: { value: colorStopsArray },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uResolution: { value: [initW, initH] },
         uBlend: { value: blend }
       }
     });
 
     const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
+    ctn.appendChild(canvas);
+
+    // Initial size — use window dims so it's never 0
+    renderer.setSize(initW, initH);
+    if (program) {
+      program.uniforms.uResolution.value = [initW, initH];
+    }
+
+    // Re-sync once the fixed layout is painted
+    const resizeTimer = setTimeout(() => {
+      resize();
+    }, 50);
 
     let animateId = 0;
     const update = (t: number) => {
@@ -194,17 +219,21 @@ export default function Aurora(props: AuroraProps) {
     };
     animateId = requestAnimationFrame(update);
 
-    resize();
-
     return () => {
+      clearTimeout(resizeTimer);
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
-      if (ctn && gl.canvas.parentNode === ctn) {
-        ctn.removeChild(gl.canvas);
+      if (ctn && canvas.parentNode === ctn) {
+        ctn.removeChild(canvas);
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [amplitude]);
+  }, []);  // Run once on mount
 
-  return <div ref={ctnDom} className="w-full h-full" />;
+  return (
+    <div
+      ref={ctnDom}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+    />
+  );
 }

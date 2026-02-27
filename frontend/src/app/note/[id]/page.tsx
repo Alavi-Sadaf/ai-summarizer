@@ -11,23 +11,29 @@ import { Toaster } from "@/components/ui/sonner";
 import { ArrowLeft, Trash2, Sparkles, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 
 export default function NoteDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { user, token, loading: authLoading } = useAuth();
     const [note, setNote] = useState<Note | null>(null);
     const [loading, setLoading] = useState(true);
     const [summarizing, setSummarizing] = useState(false);
 
     useEffect(() => {
-        if (id) fetchNote();
-    }, [id]);
+        if (!authLoading && !user) {
+            router.push("/login");
+        } else if (user && id) {
+            fetchNote();
+        }
+    }, [id, user, authLoading, router]);
 
     const fetchNote = async () => {
         try {
             setLoading(true);
-            const data = await getNote(id as string);
+            const data = await getNote(id as string, token || undefined);
             setNote(data);
         } catch (error) {
             toast.error("Failed to load note.");
@@ -39,7 +45,7 @@ export default function NoteDetailsPage() {
 
     const handleDelete = async () => {
         try {
-            await deleteNote(id as string);
+            await deleteNote(id as string, token || undefined);
             toast.success("Note deleted.");
             router.push("/");
         } catch (error) {
@@ -50,7 +56,7 @@ export default function NoteDetailsPage() {
     const handleSummarize = async () => {
         try {
             setSummarizing(true);
-            const updatedNote = await summarizeNote(id as string);
+            const updatedNote = await summarizeNote(id as string, token || undefined);
             setNote(updatedNote);
             toast.success("Summary generated!");
         } catch (error) {

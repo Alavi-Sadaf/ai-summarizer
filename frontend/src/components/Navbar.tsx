@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { ButtonCta } from "@/components/ui/button-shiny";
 
 export function Navbar() {
     const { theme, setTheme } = useTheme();
@@ -35,9 +36,8 @@ export function Navbar() {
                         <Moon className="h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
                     </button>
 
-                    <Link href="/create" className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-primary-foreground bg-primary hover:bg-primary/85 px-4 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-primary/25">
-                       <Plus className="h-3.5 w-3.5" />
-                       <span>New Note</span>
+                    <Link href="/create">
+                       <ButtonCta label="+ New Note" className="w-auto h-9 px-5 text-[11px]" />
                     </Link>
                 </div>
             </div>

@@ -7,6 +7,9 @@ const {
     summarizeNote,
     deleteNote,
 } = require('../controllers/noteController');
+const { protect } = require('../middleware/authMiddleware');
+
+router.use(protect);
 
 router.route('/').get(getNotes).post(createNote);
 router.route('/:id').get(getNoteById).delete(deleteNote);

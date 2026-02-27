@@ -9,12 +9,22 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
+
 export default function CreateNotePage() {
     const router = useRouter();
+    const { user, token, loading: authLoading } = useAuth();
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login");
+        }
+    }, [user, authLoading, router]);
 
     const handleCreate = async (title: string, content: string) => {
         try {
-            await createNote({ title, content });
+            await createNote({ title, content }, token || undefined);
             toast.success("Note created successfully.");
             setTimeout(() => {
                 router.push("/");
